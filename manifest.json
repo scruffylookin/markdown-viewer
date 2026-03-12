@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "Markdown Viewer - Tron Edition",
+  "version": "1.0.0",
+  "description": "Renders .md files with GitHub-style markdown and a dark neon Tron aesthetic",
+  "permissions": ["activeTab"],
+  "content_scripts": [
+    {
+      "matches": ["file:///*"],
+      "include_globs": ["file:///*.md"],
+      "js": ["lib/marked.min.js", "lib/highlight.min.js", "content.js"],
+      "css": ["styles.css"],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["styles.css", "lib/github-dark.min.css"],
+      "matches": ["file:///*"]
+    }
+  ],
+  "icons": {
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}
