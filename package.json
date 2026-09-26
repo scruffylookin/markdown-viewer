@@ -3,9 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "playwright test"
+    "test": "bun test ./tests/unit && playwright test",
+    "test:unit": "bun test ./tests/unit"
   },
   "devDependencies": {
-    "@playwright/test": "1.61.1"
+    "@playwright/test": "1.61.1",
+    "dompurify": "3.4.16"
   }
 }

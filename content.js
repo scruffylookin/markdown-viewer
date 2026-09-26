@@ -1,6 +1,5 @@
 (() => {
-  const url = window.location.href;
-  if (!url.startsWith('file:///') || !url.endsWith('.md')) return;
+  if (!MdvRules.shouldRender(location, document)) return;
 
   const rawText = document.body.innerText || document.body.textContent;
 
@@ -10,7 +9,7 @@
     breaks: true
   });
 
-  const html = marked.parse(rawText);
+  const html = DOMPurify.sanitize(marked.parse(rawText));
 
   // Replace entire page
   document.head.innerHTML = '';
@@ -35,7 +34,7 @@
   document.head.appendChild(hlTheme);
 
   // Set title from first heading or filename
-  const filename = decodeURIComponent(url.split('/').pop());
+  const filename = MdvRules.filenameFromPath(location.pathname);
   const tempDiv = document.createElement('div');
   tempDiv.innerHTML = html;
   const firstHeading = tempDiv.querySelector('h1, h2');
@@ -47,7 +46,10 @@
 
   const header = document.createElement('div');
   header.className = 'md-header';
-  header.innerHTML = `<span class="md-filename">${filename}</span>`;
+  const filenameSpan = document.createElement('span');
+  filenameSpan.className = 'md-filename';
+  filenameSpan.textContent = filename;
+  header.appendChild(filenameSpan);
 
   const content = document.createElement('article');
   content.className = 'md-content markdown-body';
@@ -59,16 +61,4 @@
 
   // Syntax-highlight code blocks
   content.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
-
-  // Add checkbox interactivity for task lists
-  content.querySelectorAll('li').forEach(li => {
-    const text = li.innerHTML;
-    if (text.startsWith('[ ] ')) {
-      li.innerHTML = '<input type="checkbox" disabled> ' + text.slice(4);
-      li.classList.add('task-list-item');
-    } else if (text.startsWith('[x] ') || text.startsWith('[X] ')) {
-      li.innerHTML = '<input type="checkbox" checked disabled> ' + text.slice(4);
-      li.classList.add('task-list-item');
-    }
-  });
 })();

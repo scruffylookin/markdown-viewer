@@ -1,0 +1,116 @@
+/* Options page: a compact take on the Tron theme in styles.css. */
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-tertiary: #111122;
+  --border-dim: #1a1a3a;
+  --text-primary: #c8d6e5;
+  --text-secondary: #7f8fa6;
+  --accent-cyan: #00e5ff;
+  --accent-teal: #00ffcc;
+  --accent-orange: #ff6e40;
+  --glow-cyan: 0 0 10px rgba(0, 229, 255, 0.3);
+}
+
+body {
+  margin: 0;
+  padding: 16px;
+  min-width: 360px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  color: var(--accent-cyan);
+  text-shadow: var(--glow-cyan);
+}
+
+.hint {
+  margin: 0 0 12px;
+  color: var(--text-secondary);
+}
+
+code {
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  color: var(--accent-teal);
+}
+
+#site-form {
+  display: flex;
+  gap: 8px;
+}
+
+#site-input {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-dim);
+  border-radius: 4px;
+  font: inherit;
+}
+
+#site-input:focus {
+  outline: none;
+  border-color: var(--accent-cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+button {
+  padding: 6px 12px;
+  background: transparent;
+  color: var(--accent-cyan);
+  border: 1px solid var(--accent-cyan);
+  border-radius: 4px;
+  font: inherit;
+  cursor: pointer;
+}
+
+button:hover,
+button:focus-visible {
+  background: rgba(0, 229, 255, 0.1);
+  box-shadow: var(--glow-cyan);
+  outline: none;
+}
+
+#site-error,
+#site-note {
+  margin: 8px 0 0;
+}
+
+#site-error {
+  color: var(--accent-orange);
+}
+
+#site-note {
+  color: var(--text-secondary);
+}
+
+#site-list {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+}
+
+#site-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border-dim);
+}
+
+.site-pattern {
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  overflow-wrap: anywhere;
+}
+
+.remove-site {
+  padding: 2px 8px;
+  color: var(--accent-orange);
+  border-color: var(--accent-orange);
+}
