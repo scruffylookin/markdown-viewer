@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Markdown Viewer sites</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <h1>Approved sites</h1>
+  <p class="hint">Render <code>.md</code> files served as plain text from these sites.
+    Enter a host (<code>raw.githubusercontent.com</code>) or a match pattern
+    (<code>https://example.com/docs/*</code>).</p>
+  <form id="site-form" autocomplete="off">
+    <input id="site-input" type="text" placeholder="raw.githubusercontent.com" aria-label="Site or match pattern">
+    <button id="add-site" type="button">Add</button>
+  </form>
+  <p id="site-error" role="alert" hidden></p>
+  <p id="site-note" hidden></p>
+  <ul id="site-list"></ul>
+  <script src="rules.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>
