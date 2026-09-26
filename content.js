@@ -7,13 +7,7 @@
   // Configure marked
   marked.setOptions({
     gfm: true,
-    breaks: true,
-    highlight: (code, lang) => {
-      if (lang && hljs.getLanguage(lang)) {
-        return hljs.highlight(code, { language: lang }).value;
-      }
-      return hljs.highlightAuto(code).value;
-    }
+    breaks: true
   });
 
   const html = marked.parse(rawText);
@@ -62,6 +56,9 @@
   container.appendChild(header);
   container.appendChild(content);
   document.body.appendChild(container);
+
+  // Syntax-highlight code blocks
+  content.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
 
   // Add checkbox interactivity for task lists
   content.querySelectorAll('li').forEach(li => {

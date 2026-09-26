@@ -55,3 +55,12 @@ A `test.md` file is included in the repo for quick verification.
 | Markdown parser | marked 12.0.2 |
 | Syntax highlighting | highlight.js 11.9.0 |
 | Theme | Custom dark neon / Tron |
+
+## Development
+
+The extension has no build step. Tests use [Playwright](https://playwright.dev/) with [bun](https://bun.sh/): they load the unpacked extension in Chromium and check the rendered page.
+
+```bash
+bun install
+bun run test
+```
