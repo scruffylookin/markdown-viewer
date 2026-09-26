@@ -77,4 +77,17 @@ The extension has no build step. Tests use [Playwright](https://playwright.dev/)
 ```bash
 bun install
 bun run test        # unit tests (bun) + extension tests (Playwright)
+bun run build       # builds dist/markdown-viewer-v<version>.zip
 ```
+
+CI runs the tests on every pull request and uploads the built zip as a downloadable artifact.
+
+### Releasing
+
+1. Bump `version` in `manifest.json` in a pull request and merge it.
+2. Tag the merge commit with the same version and push the tag:
+   ```bash
+   git tag v2.0.0
+   git push origin v2.0.0
+   ```
+3. The Release workflow tests the extension, builds the zip and publishes it on the [Releases](https://github.com/scruffylookin/markdown-viewer/releases) page.

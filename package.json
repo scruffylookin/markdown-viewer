@@ -4,10 +4,12 @@
   "type": "module",
   "scripts": {
     "test": "bun test ./tests/unit && playwright test",
-    "test:unit": "bun test ./tests/unit"
+    "test:unit": "bun test ./tests/unit",
+    "build": "bun run scripts/build-zip.ts"
   },
   "devDependencies": {
     "@playwright/test": "1.61.1",
-    "dompurify": "3.4.16"
+    "dompurify": "3.4.16",
+    "fflate": "0.8.3"
   }
 }
