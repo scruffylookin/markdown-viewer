@@ -4,6 +4,7 @@ import { createServer, type Server } from 'node:http';
 import { tmpdir } from 'node:os';
 import { dirname, extname, join, normalize, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { EXTENSION_FILES } from '../scripts/extension-files';
 
 // Extension APIs used inside evaluate() callbacks (no @types/chrome installed).
 declare const chrome: any;
@@ -11,27 +12,14 @@ declare const chrome: any;
 export const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 export const SITE_FIXTURES = join(REPO_ROOT, 'tests', 'fixtures', 'site');
 
-// Only the extension's own files. Loading the repo root directly fails because
-// Chrome rejects unpacked extensions containing names starting with "_"
-// (node_modules/ has those), and copying keeps the load hermetic. Entries that
-// don't exist yet are skipped so the harness works before a feature lands.
-const EXTENSION_FILES = [
-  'manifest.json',
-  'content.js',
-  'rules.js',
-  'background.js',
-  'options.html',
-  'options.js',
-  'options.css',
-  'styles.css',
-  'lib',
-  'icon48.png',
-  'icon128.png',
-];
-
 /** Dynamic content script id registered by background.js (issue #1 contract). */
 export const MD_SITES_ID = 'md-sites';
 
+// Only the extension's own files (shared with the release build). Loading the
+// repo root directly fails because Chrome rejects unpacked extensions
+// containing names starting with "_" (node_modules/ has those), and copying
+// keeps the load hermetic. Entries that don't exist yet are skipped so the
+// harness works before a feature lands.
 function stageExtension(): string {
   const dir = mkdtempSync(join(tmpdir(), 'mdv-ext-'));
   for (const f of EXTENSION_FILES) {

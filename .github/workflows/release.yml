@@ -1,0 +1,62 @@
+name: Release
+
+# Push a tag matching the manifest version (e.g. v2.0.0) to test, build and
+# publish dist/markdown-viewer-v<version>.zip as a GitHub release.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.2"
+
+      - run: bun install --frozen-lockfile
+
+      - name: Check tag matches manifest version
+        run: |
+          version=$(jq -r .version manifest.json)
+          if [ "${GITHUB_REF_NAME}" != "v${version}" ]; then
+            echo "::error::tag ${GITHUB_REF_NAME} does not match manifest.json version ${version}"
+            exit 1
+          fi
+
+      - name: Install Chromium
+        run: bunx playwright install --with-deps chromium
+
+      - name: Test
+        run: bun run test
+
+      - name: Build extension zip
+        run: bun run build
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cat > release-notes.md <<NOTES
+          ## Install
+
+          1. Download \`markdown-viewer-${GITHUB_REF_NAME}.zip\` below
+          2. Unzip it to a folder
+          3. Open Chrome → \`chrome://extensions/\`
+          4. Enable **Developer mode** (top right toggle)
+          5. Click **Load unpacked** → select the unzipped folder
+          6. Enable **Allow access to file URLs** for the extension
+
+          Then open any \`file:///path/to/file.md\` in Chrome. To render markdown on websites, see "Rendering markdown on websites" in the README.
+          NOTES
+          gh release create "${GITHUB_REF_NAME}" "dist/markdown-viewer-${GITHUB_REF_NAME}.zip" \
+            --title "Markdown Viewer - Tron Edition ${GITHUB_REF_NAME}" \
+            --notes-file release-notes.md \
+            --generate-notes \
+            --verify-tag

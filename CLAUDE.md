@@ -11,14 +11,15 @@ A Manifest V3 Chrome extension that renders `.md` files as GitHub-flavored markd
 ```bash
 bun install                                  # test dependencies only; the extension needs none
 bun run test                                 # bun unit tests, then the full Playwright suite (about 30s)
-bun run test:unit                            # rules.js unit tests only
+bun run test:unit                            # bun unit tests only (rules.js, release build)
+bun run build                                # dist/markdown-viewer-v<manifest version>.zip
 bunx playwright test -g "js block"           # run a single test by name
 bunx playwright test tests/highlighting.spec.ts
 ```
 
 `@playwright/test` is pinned so its bundled Chromium matches the browser installed in `~/.cache/ms-playwright`. If you bump it, run `bunx playwright install chromium`.
 
-There is no CI yet (#3), so run `bun run test` before opening a PR.
+CI (`.github/workflows/ci.yml`) runs `bun run test` on every PR and push to `main`, then builds the zip and uploads it as the `markdown-viewer-zip` artifact.
 
 ## Running it by hand
 
@@ -29,7 +30,11 @@ There is no CI yet (#3), so run `bun run test` before opening a PR.
 
 After editing any file, click the reload icon on the extension card, then reload the `.md` tab.
 
-Releases are published as a `.zip` of the extension files on the GitHub Releases page (see README).
+## Releasing
+
+The zip is built by the pipeline, never by hand. `scripts/extension-files.ts` is the single list of files that make up the extension: the test harness stages exactly those, and `scripts/build-zip.ts` zips exactly those plus `README.md`. A unit test fails if `manifest.json`, `options.html` or `background.js` references a file that isn't in that list. When you add an extension file, add it there.
+
+To release, bump `version` in `manifest.json` in a PR and merge it. Then push a matching tag (`git tag v2.0.0 && git push origin v2.0.0`). `.github/workflows/release.yml` checks that the tag matches the manifest version, runs the tests, builds the zip and publishes the GitHub release with it attached.
 
 ## Architecture
 
@@ -48,7 +53,7 @@ The runtime is a content script plus a small service worker and an options page.
 
 ## Test harness
 
-`tests/extension.ts` is a Playwright fixture. It copies only the extension's own files (`EXTENSION_FILES`: manifest, js, html, css, `lib/`, icons) into a temp directory. Add new extension files to that list. It copies them because Chrome won't load the repo root with `node_modules/` in it. It launches a persistent Chromium context with `--load-extension` and turns on file-URL access through `chrome.developerPrivate` on `chrome://extensions`. Tests call `openMarkdown(path)`, which waits for `article.md-content`, so a harness failure shows as a `[harness]` error rather than a failed assertion. The `ext` fixture (`ExtensionSession`) drives site tests: `site` serves `tests/fixtures/site/` on `http://127.0.0.1:<port>`, and `grantHost(pattern)` grants an optional host without the prompt by relaunching once with the pattern in the *staged* manifest's `host_permissions` and then restoring it. `developerPrivate.addHostPermission` doesn't work for optional hosts. `seedSites`, `waitForRegistration`, `relaunch` and `optionsPage` cover the rest. Fixtures live in `tests/fixtures/`. Unit tests live in `tests/unit/` and must be run as `bun test ./tests/unit`, because a bare `bun test` also picks up the Playwright `*.spec.ts` files. Tests are tagged `// @permanent issue=#N` plus a `[@permanent]` name prefix.
+`tests/extension.ts` is a Playwright fixture. It copies only the extension's own files (`EXTENSION_FILES` from `scripts/extension-files.ts`) into a temp directory. It copies them because Chrome won't load the repo root with `node_modules/` in it. It launches a persistent Chromium context with `--load-extension` and turns on file-URL access through `chrome.developerPrivate` on `chrome://extensions`. Tests call `openMarkdown(path)`, which waits for `article.md-content`, so a harness failure shows as a `[harness]` error rather than a failed assertion. The `ext` fixture (`ExtensionSession`) drives site tests: `site` serves `tests/fixtures/site/` on `http://127.0.0.1:<port>`, and `grantHost(pattern)` grants an optional host without the prompt by relaunching once with the pattern in the *staged* manifest's `host_permissions` and then restoring it. `developerPrivate.addHostPermission` doesn't work for optional hosts. `seedSites`, `waitForRegistration`, `relaunch` and `optionsPage` cover the rest. Fixtures live in `tests/fixtures/`. Unit tests live in `tests/unit/` and must be run as `bun test ./tests/unit`, because a bare `bun test` also picks up the Playwright `*.spec.ts` files. Tests are tagged `// @permanent issue=#N` plus a `[@permanent]` name prefix.
 
 ## Known issues
 

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Markdown Viewer - Tron Edition",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Renders .md files with GitHub-style markdown and a dark neon Tron aesthetic",
   "permissions": ["activeTab", "storage", "scripting"],
   "optional_host_permissions": ["https://*/*", "http://*/*"],
